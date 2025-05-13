@@ -20,9 +20,13 @@ public:
   int get_height() const;
   int get_balance() const;
   void recalc_height();
-  Node<T> *get_min() const;
+  Node<T> *get_min();
+  Node<T> *get_max();
   Node<T> *get_next() const;
+  Node<T> *lowerbound();
+  Node<T> *upperbound();
   void display() const;
+  T &get_key();
 
 private:
   Node<T> *left_;
@@ -46,10 +50,18 @@ template <typename T> void Node<T>::set_height(int height) { height_ = height; }
 
 template <typename T> int Node<T>::get_height() const { return height_; }
 
-template <typename T> Node<T> *Node<T>::get_min() const {
+template <typename T> Node<T> *Node<T>::get_min() {
   Node<T> *current = this;
   while (current->left_) {
     current = current->left_;
+  }
+  return current;
+}
+
+template <typename T> Node<T> *Node<T>::get_max() {
+  Node<T> *current = this;
+  while (current->right_) {
+    current = current->right_;
   }
   return current;
 }
@@ -86,3 +98,31 @@ template <typename T> void Node<T>::display() const {
 template <typename T> void display_node(const Node<T> *node) {
   node->display();
 }
+
+template <typename T> Node<T> *Node<T>::lowerbound() {
+  Node<T> *node = this;
+  if (node->right_ != nullptr) {
+    return node->right_->get_min();
+  }
+  Node<T> *prev_node = node->parent_;
+  while (prev_node && node != prev_node->left_) {
+    node = prev_node;
+    prev_node = prev_node->parent_;
+  }
+  return prev_node;
+}
+
+template <typename T> Node<T> *Node<T>::upperbound() {
+  Node<T> *node = this;
+  if (node->left_ != nullptr) {
+    return node->left_->get_max();
+  }
+  Node<T> *prev_node = node->parent_;
+  while (prev_node && node != prev_node->right_) {
+    node = prev_node;
+    prev_node = prev_node->parent_;
+  }
+  return prev_node;
+}
+
+template <typename T> T &Node<T>::get_key() { return key_; }

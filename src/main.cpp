@@ -20,6 +20,14 @@ int main() {
   tree2.insert(1.5);
   tree2.insert(2.8);
   tree2.insert(3.9);
+  std::cout << "lowerbound 3.5 : " << tree2.find(3.5)->lowerbound()->get_key()
+            << std::endl;
+  std::cout << "upperbound 3.5 : " << tree2.find(3.5)->upperbound()->get_key()
+            << std::endl;
+  std::cout << "lowerbound 1.5 : " << tree2.find(1.5)->lowerbound()->get_key()
+            << std::endl;
+  std::cout << "lowerbound 1.5 : " << tree2.find(1.5)->upperbound()
+            << std::endl;
   tree2.display();
   std::cout << "tree2 is balanced : "
             << (tree2.is_balanced() ? "true" : "false") << std::endl;
