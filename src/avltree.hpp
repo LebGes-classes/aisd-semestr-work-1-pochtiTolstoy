@@ -15,6 +15,7 @@ public:
   void insert(const T &key);
   size_t get_height() const;
   void display() const;
+  bool is_balanced() const;
 
 private:
   Node<T> *insert_recursively(Node<T> *, const T &);
@@ -24,6 +25,7 @@ private:
   Node<T> *LL_rotate(Node<T> *);
   Node<T> *LR_rotate(Node<T> *);
   void traverse_inorder(Node<T> *node, void (*func)(const Node<T> *)) const;
+  bool is_balanced_(const Node<T> *node) const;
 
   Node<T> *root_;
   size_t size_;
@@ -251,4 +253,18 @@ void AVLTree<T>::traverse_inorder(Node<T> *node,
   traverse_inorder(node->left_, func);
   func(node);
   traverse_inorder(node->right_, func);
+}
+
+template <typename T> bool AVLTree<T>::is_balanced() const {
+  return is_balanced_(root_);
+}
+
+template <typename T> bool AVLTree<T>::is_balanced_(const Node<T> *node) const {
+  if (node == nullptr)
+    return true;
+  int balance = node->get_balance();
+  if (balance < MIN_BALANCE_TRESHOLD || balance > MAX_BALANCE_TRESHOLD) {
+    return false;
+  }
+  return is_balanced_(node->left_) && is_balanced_(node->right_);
 }
