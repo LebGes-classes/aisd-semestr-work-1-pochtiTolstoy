@@ -34,7 +34,18 @@ int main() {
   tree3.insert("g");
   tree3.insert("h");
   tree3.display();
-  std::cout << "tree3 is balanced : "
-            << (tree3.is_balanced() ? "true" : "false") << std::endl;
+  std::cout << "find a : " << (tree3.find("a") ? "true" : "false") << std::endl;
+  std::cout << "find b : " << (tree3.find("b") ? "true" : "false") << std::endl;
+  std::cout << "find c : " << (tree3.find("c") ? "true" : "false") << std::endl;
+  std::cout << "find d : " << (tree3.find("d") ? "true" : "false") << std::endl;
+  std::cout << "find e : " << (tree3.find("e") ? "true" : "false") << std::endl;
+  std::cout << "find f : " << (tree3.find("f") ? "true" : "false") << std::endl;
+  std::cout << "find g : " << (tree3.find("g") ? "true" : "false") << std::endl;
+  std::cout << "find z : " << (tree3.find("z") ? "true" : "false") << std::endl;
+  std::cout << "tree3 is balanced : " << (tree3.is_balanced()) << std::endl;
+  std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
+  tree3.clear_tree();
+  std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
+
   std::cout << "hello" << std::endl;
 }

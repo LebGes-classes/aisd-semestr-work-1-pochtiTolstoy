@@ -10,12 +10,15 @@ template <typename T> class AVLTree {
 public:
   AVLTree();
   ~AVLTree();
-  void clear_tree();
-  size_t get_size() const;
   void insert(const T &key);
+  Node<T> *find(const T &key);
+  void clear_tree();
+
   size_t get_height() const;
+  size_t get_size() const;
   void display() const;
   bool is_balanced() const;
+  bool is_empty() const;
 
 private:
   Node<T> *insert_recursively(Node<T> *, const T &);
@@ -102,6 +105,16 @@ Node<T> *AVLTree<T>::insert_recursively(Node<T> *node, const T &key) {
   node->recalc_height();
 
   return fix_balance(node, key);
+}
+
+template <typename T> Node<T> *AVLTree<T>::find(const T &key) {
+  if (root_ == nullptr)
+    return nullptr;
+  Node<T> *walk_node = root_;
+  while (walk_node != nullptr && key != walk_node->key_) {
+    walk_node = (key < walk_node->key_) ? walk_node->left_ : walk_node->right_;
+  }
+  return walk_node;
 }
 
 template <typename T>
@@ -268,3 +281,5 @@ template <typename T> bool AVLTree<T>::is_balanced_(const Node<T> *node) const {
   }
   return is_balanced_(node->left_) && is_balanced_(node->right_);
 }
+
+template <typename T> bool AVLTree<T>::is_empty() const { return size_ == 0; }
