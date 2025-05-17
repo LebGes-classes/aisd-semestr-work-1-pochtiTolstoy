@@ -10,7 +10,7 @@ template <typename T> class Node {
   friend class AVLTree<T>;
 
 public:
-  Node(const T &key = T{}, int height = 0);
+  Node(const T &key = T{}, int height = 1);
   ~Node();
 
   Node(const Node &) = delete;

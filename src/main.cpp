@@ -1,7 +1,8 @@
 #include "avltree.hpp"
 #include <iostream>
+#include <random>
 
-int main() {
+void blank() {
   AVLTree<int> tree;
   tree.display();
   tree.insert(10);
@@ -54,6 +55,32 @@ int main() {
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
   tree3.clear_tree();
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
+}
 
+int main() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distr(0, 99);
+
+  {
+    AVLTree<int> tree;
+    // bug with balance
+    for (int i = 0; i < 10; ++i) {
+      tree.insert(i);
+    }
+    std::cout << "tree id balanced -> "
+              << (tree.is_balanced() ? "true" : "false") << std::endl;
+    /*
+    int value = 5;
+    if (tree.find(value)) {
+      std::cout << "find : " << value << std::endl;
+    }
+    tree.delete_key(value);
+    // if (!tree.find(value)) {
+    //   std::cout << "no find : " << value << std::endl;
+    // }
+    // tree.display();
+    */
+  }
   std::cout << "hello" << std::endl;
 }

@@ -12,6 +12,7 @@ public:
   ~AVLTree();
   void insert(const T &key);
   Node<T> *find(const T &key);
+  void delete_key(const T &key);
   void clear_tree();
 
   size_t get_height() const;
@@ -29,6 +30,11 @@ private:
   Node<T> *LR_rotate(Node<T> *);
   void traverse_inorder(Node<T> *node, void (*func)(const Node<T> *)) const;
   bool is_balanced_(const Node<T> *node) const;
+  Node<T> *delete_node_(Node<T> *del_node);
+  void transplant_(Node<T> *u, Node<T> *v);
+  void isolate_node_(Node<T> *node);
+  Node<T> *rebalance_up_(Node<T> *unbalanced_node);
+  Node<T> *process_delete_rotation_(Node<T> *node, int balance);
 
   Node<T> *root_;
   size_t size_;
@@ -69,7 +75,7 @@ Node<T> *AVLTree<T>::insert_recursively(Node<T> *node, const T &key) {
   /* found place for new node */
   if (node == nullptr) {
     ++size_;
-    return new Node<T>(key, 0);
+    return new Node<T>(key);
   }
 
   /* if the same key was found in an existing node,
@@ -283,3 +289,126 @@ template <typename T> bool AVLTree<T>::is_balanced_(const Node<T> *node) const {
 }
 
 template <typename T> bool AVLTree<T>::is_empty() const { return size_ == 0; }
+
+template <typename T> void AVLTree<T>::delete_key(const T &key) {
+  Node<T> *found_node = find(key);
+  if (found_node == nullptr) {
+    return;
+  }
+  Node<T> *unbalanced_node = delete_node_(found_node);
+  if (unbalanced_node == nullptr) {
+    return;
+  }
+  root_ = rebalance_up_(unbalanced_node);
+}
+
+template <typename T> Node<T> *AVLTree<T>::delete_node_(Node<T> *del_node) {
+  Node<T> *unbalanced_node = nullptr;
+  --size_;
+  if (del_node->left_ == nullptr) {
+    unbalanced_node = del_node->parent_;
+    transplant_(del_node, del_node->right_);
+    isolate_node_(del_node);
+    delete del_node;
+    return unbalanced_node;
+  }
+
+  if (del_node->right_ == nullptr) {
+    unbalanced_node = del_node->parent_;
+    transplant_(del_node, del_node->left_);
+    isolate_node_(del_node);
+    delete del_node;
+    return unbalanced_node;
+  }
+
+  Node<T> *rotate_node = del_node->right_->get_min();
+  unbalanced_node = rotate_node;
+
+  if (rotate_node->parent_ != del_node) {
+    unbalanced_node = rotate_node->parent_;
+    transplant_(rotate_node, rotate_node->right_);
+    rotate_node->right_ = del_node->right_;
+    rotate_node->right_->parent_ = rotate_node;
+  }
+
+  transplant_(del_node, rotate_node);
+  rotate_node->left_ = del_node->right_;
+  rotate_node->left_->parent_ = rotate_node;
+  isolate_node_(del_node);
+  delete del_node;
+
+  return unbalanced_node;
+}
+
+// isolate node for deletion
+template <typename T> void AVLTree<T>::transplant_(Node<T> *u, Node<T> *v) {
+  if (u->parent_ == nullptr) {
+    root_ = v;
+  } else if (u == u->parent_->left_) {
+    u->parent_->left_ = v;
+  } else {
+    u->parent_->right_ = v;
+  }
+  if (v != nullptr) {
+    v->parent_ = u->parent_;
+  }
+}
+template <typename T> void AVLTree<T>::isolate_node_(Node<T> *node) {
+  node->left_ = nullptr;
+  node->right_ = nullptr;
+}
+
+template <typename T>
+Node<T> *AVLTree<T>::process_delete_rotation_(Node<T> *node, int node_balance) {
+  // fix parent after return
+  if (node_balance > MAX_BALANCE_TRESHOLD && node->left_ &&
+      node->left_->get_balance() >= 0) {
+    return LL_rotate(node);
+  }
+
+  if (node_balance < MIN_BALANCE_TRESHOLD && node->right_ &&
+      node->right_->get_balance() <= 0) {
+    return RR_rotate(node);
+  }
+
+  if (node_balance > MAX_BALANCE_TRESHOLD && node->left_ &&
+      node->left_->get_balance() < 0) {
+    return LR_rotate(node);
+  }
+
+  if (node_balance < MIN_BALANCE_TRESHOLD && node->right_ &&
+      node->right_->get_balance() > 0) {
+    return RL_rotate(node);
+  }
+
+  return node;
+}
+
+template <typename T>
+Node<T> *AVLTree<T>::rebalance_up_(Node<T> *unbalanced_node) {
+  Node<T> *prev_node = unbalanced_node;
+  bool left_child = false;
+  int node_balance = 0;
+
+  for (;;) {
+    prev_node = unbalanced_node->parent_;
+    if (prev_node) {
+      left_child = (prev_node->left_ == unbalanced_node);
+    }
+    unbalanced_node->recalc_height();
+    node_balance = unbalanced_node->get_balance();
+    unbalanced_node = process_delete_rotation_(unbalanced_node, node_balance);
+    unbalanced_node->parent_ = prev_node;
+
+    if (!prev_node) {
+      return unbalanced_node;
+    }
+
+    if (left_child) {
+      prev_node->left_ = unbalanced_node;
+    } else {
+      prev_node->right_ = unbalanced_node;
+    }
+    unbalanced_node = prev_node;
+  }
+}
