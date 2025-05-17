@@ -332,7 +332,7 @@ template <typename T> Node<T> *AVLTree<T>::delete_node_(Node<T> *del_node) {
   }
 
   transplant_(del_node, rotate_node);
-  rotate_node->left_ = del_node->right_;
+  rotate_node->left_ = del_node->left_;
   rotate_node->left_->parent_ = rotate_node;
   isolate_node_(del_node);
   delete del_node;
