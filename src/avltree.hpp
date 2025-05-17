@@ -2,6 +2,8 @@
 
 #include "node.hpp"
 #include <cstdlib>
+#include <stack>
+#include <vector>
 
 #define MAX_BALANCE_TRESHOLD 1
 #define MIN_BALANCE_TRESHOLD -1
@@ -15,11 +17,18 @@ public:
   void delete_key(const T &key);
   void clear_tree();
 
+  Node<T> *get_min() const;
+  Node<T> *get_max() const;
   size_t get_height() const;
   size_t get_size() const;
   void display() const;
   bool is_balanced() const;
   bool is_empty() const;
+  Node<T> *lowerbound(const T &key);
+  Node<T> *upperbound(const T &key);
+  std::vector<T> in_order() const;
+  std::vector<T> pre_order() const;
+  std::vector<T> post_order() const;
 
 private:
   Node<T> *insert_recursively(Node<T> *, const T &);
@@ -35,6 +44,9 @@ private:
   void isolate_node_(Node<T> *node);
   Node<T> *rebalance_up_(Node<T> *unbalanced_node);
   Node<T> *process_delete_rotation_(Node<T> *node, int balance);
+  void in_order_(Node<T> *node, std::vector<T> &vec) const;
+  void pre_order_(Node<T> *node, std::vector<T> &vec) const;
+  void post_order_(Node<T> *node, std::vector<T> &vec) const;
 
   Node<T> *root_;
   size_t size_;
@@ -411,4 +423,73 @@ Node<T> *AVLTree<T>::rebalance_up_(Node<T> *unbalanced_node) {
     }
     unbalanced_node = prev_node;
   }
+}
+
+template <typename T> Node<T> *AVLTree<T>::get_min() const {
+  return root_->get_min();
+}
+
+template <typename T> Node<T> *AVLTree<T>::get_max() const {
+  return root_->get_max();
+}
+
+template <typename T> Node<T> *AVLTree<T>::lowerbound(const T &key) {
+  Node<T> *node = find(key);
+  if (!node) {
+    return nullptr;
+  }
+  return node->lowerbound();
+}
+
+template <typename T> Node<T> *AVLTree<T>::upperbound(const T &key) {
+  Node<T> *node = find(key);
+  if (!node) {
+    return nullptr;
+  }
+  return node->upperbound();
+}
+
+template <typename T> std::vector<T> AVLTree<T>::in_order() const {
+  std::vector<T> vec;
+  in_order_(root_, vec);
+  return vec;
+}
+
+template <typename T>
+void AVLTree<T>::in_order_(Node<T> *node, std::vector<T> &vec) const {
+  if (node == nullptr)
+    return;
+  in_order_(node->left_, vec);
+  vec.push_back(node->key_);
+  in_order_(node->right_, vec);
+}
+
+template <typename T> std::vector<T> AVLTree<T>::pre_order() const {
+  std::vector<T> vec;
+  pre_order_(root_, vec);
+  return vec;
+}
+
+template <typename T>
+void AVLTree<T>::pre_order_(Node<T> *node, std::vector<T> &vec) const {
+  if (node == nullptr)
+    return;
+  vec.push_back(node->key_);
+  pre_order_(node->left_, vec);
+  pre_order_(node->right_, vec);
+}
+
+template <typename T> std::vector<T> AVLTree<T>::post_order() const {
+  std::vector<T> vec;
+  post_order_(root_, vec);
+  return vec;
+}
+
+template <typename T>
+void AVLTree<T>::post_order_(Node<T> *node, std::vector<T> &vec) const {
+  if (node == nullptr)
+    return;
+  post_order_(node->left_, vec);
+  post_order_(node->right_, vec);
+  vec.push_back(node->key_);
 }

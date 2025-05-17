@@ -2,6 +2,69 @@
 #include <iostream>
 #include <random>
 
+void blank();
+void blank2();
+
+int main() {
+  // blank();
+  return 0;
+}
+
+void blank2() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distr(0, 9);
+  {
+    AVLTree<int> tree;
+    // bug with balance
+    for (int i = 0; i < 10; ++i) {
+      tree.insert(i);
+    }
+    std::cout << "tree id balanced -> "
+              << (tree.is_balanced() ? "true" : "false") << std::endl;
+    for (int i = 0; i < 10; ++i) {
+      int value = i;
+      if (tree.find(value)) {
+        std::cout << "find : " << value << std::endl;
+      }
+      tree.delete_key(value);
+      if (!tree.find(value)) {
+        std::cout << "no find : " << value << std::endl;
+      }
+      tree.display();
+    }
+  }
+  std::cout << "hello" << std::endl;
+
+  {
+    AVLTree<int> tree;
+    for (int i = 0; i < 10; ++i) {
+      tree.insert(i);
+    }
+
+    std::cout << "in order" << std::endl;
+    std::vector<int> vec = tree.in_order();
+    for (int i = 0; i < vec.size(); ++i) {
+      std::cout << vec[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "pre order" << std::endl;
+    vec = tree.pre_order();
+    for (int i = 0; i < vec.size(); ++i) {
+      std::cout << vec[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "post order" << std::endl;
+    vec = tree.post_order();
+    for (int i = 0; i < vec.size(); ++i) {
+      std::cout << vec[i] << " ";
+    }
+    std::cout << std::endl;
+  }
+}
+
 void blank() {
   AVLTree<int> tree;
   tree.display();
@@ -55,32 +118,4 @@ void blank() {
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
   tree3.clear_tree();
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
-}
-
-int main() {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> distr(0, 9);
-
-  {
-    AVLTree<int> tree;
-    // bug with balance
-    for (int i = 0; i < 10; ++i) {
-      tree.insert(i);
-    }
-    std::cout << "tree id balanced -> "
-              << (tree.is_balanced() ? "true" : "false") << std::endl;
-    for (int i = 0; i < 10; ++i) {
-      int value = i;
-      if (tree.find(value)) {
-        std::cout << "find : " << value << std::endl;
-      }
-      tree.delete_key(value);
-      if (!tree.find(value)) {
-        std::cout << "no find : " << value << std::endl;
-      }
-      tree.display();
-    }
-  }
-  std::cout << "hello" << std::endl;
 }
