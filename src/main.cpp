@@ -7,6 +7,26 @@ void blank2();
 
 int main() {
   // blank();
+
+  AVLTree<int> tree;
+  std::vector<int> values = {10, 5, 15, 3, 7, 12, 17};
+  for (int val : values) {
+    tree.insert(val);
+  }
+
+  Node<int> *lower = tree.lowerbound(8);
+  if (lower) {
+    std::cout << "lower key: " << lower->get_key() << std::endl;
+  }
+  if (lower != nullptr && lower->get_key() == 10) {
+    std::cout << 1;
+  }
+
+  /*
+  Node<int> *upper = tree->upperbound(8);
+  EXPECT_NE(upper, nullptr);
+  EXPECT_EQ(upper->get_key(), 7);
+  */
   return 0;
 }
 

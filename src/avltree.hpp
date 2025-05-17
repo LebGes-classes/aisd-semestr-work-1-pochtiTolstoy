@@ -426,27 +426,39 @@ Node<T> *AVLTree<T>::rebalance_up_(Node<T> *unbalanced_node) {
 }
 
 template <typename T> Node<T> *AVLTree<T>::get_min() const {
-  return root_->get_min();
+  return (root_) ? root_->get_min() : nullptr;
 }
 
 template <typename T> Node<T> *AVLTree<T>::get_max() const {
-  return root_->get_max();
+  return (root_) ? root_->get_max() : nullptr;
 }
 
 template <typename T> Node<T> *AVLTree<T>::lowerbound(const T &key) {
-  Node<T> *node = find(key);
-  if (!node) {
-    return nullptr;
+  Node<T> *current = root_;
+  Node<T> *result = nullptr;
+  while (current != nullptr) {
+    if (current->key_ >= key) {
+      result = current;
+      current = current->left_;
+    } else {
+      current = current->right_;
+    }
   }
-  return node->lowerbound();
+  return result;
 }
 
 template <typename T> Node<T> *AVLTree<T>::upperbound(const T &key) {
-  Node<T> *node = find(key);
-  if (!node) {
-    return nullptr;
+  Node<T> *current = root_;
+  Node<T> *result = nullptr;
+  while (current) {
+    if (current->key_ <= key) {
+      result = current;
+      current = current->right_;
+    } else {
+      current = current->left_;
+    }
   }
-  return node->upperbound();
+  return result;
 }
 
 template <typename T> std::vector<T> AVLTree<T>::in_order() const {

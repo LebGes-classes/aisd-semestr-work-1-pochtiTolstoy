@@ -101,6 +101,9 @@ template <typename T> void display_node(const Node<T> *node) {
 
 template <typename T> Node<T> *Node<T>::lowerbound() {
   Node<T> *node = this;
+  if (node == nullptr) {
+    return nullptr;
+  }
   if (node->right_ != nullptr) {
     return node->right_->get_min();
   }
@@ -114,6 +117,9 @@ template <typename T> Node<T> *Node<T>::lowerbound() {
 
 template <typename T> Node<T> *Node<T>::upperbound() {
   Node<T> *node = this;
+  if (node == nullptr) {
+    return nullptr;
+  }
   if (node->left_ != nullptr) {
     return node->left_->get_max();
   }
