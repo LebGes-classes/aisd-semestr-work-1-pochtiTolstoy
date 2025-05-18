@@ -2,5 +2,10 @@
 # АиСД
 ## Семестровая работа по структурам данных
 
+## build and run
+* use script `./run` in order to build project using CMake, run `avltree_tests` to see gtests results or `avltree_app` to run main.cpp unit
+* or build manually using `g++ *.cpp` in `src` folder
+
+
 Необходимо выполнить задание согласно выбранному варианту (согласовывается с преподавателем).
 Реализация СД должна быть выполнена на языке программирования C++.
