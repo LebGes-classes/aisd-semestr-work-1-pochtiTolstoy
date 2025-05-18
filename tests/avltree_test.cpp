@@ -1,6 +1,8 @@
 #include "../src/avltree.hpp"
 #include <algorithm>
+#include <chrono>
 #include <gtest/gtest.h>
+#include <memory>
 #include <random>
 #include <vector>
 
@@ -155,6 +157,148 @@ TEST_F(AVLTreeTest, HeightProperty) {
   tree->insert(12);
   tree->insert(17);
   EXPECT_EQ(tree->get_height(), 3);
+}
+
+// Test stress with large number of operations
+TEST_F(AVLTreeTest, StressTest) {
+  const int num_operations = 10000;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(1, num_operations);
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  for (int i = 0; i < num_operations; ++i) {
+    int val = dis(gen);
+    tree->insert(val);
+    EXPECT_TRUE(tree->is_balanced());
+  }
+
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+  // Verify tree properties after stress test
+  EXPECT_TRUE(tree->is_balanced());
+  EXPECT_LE(tree->get_height(), 2 * std::log2(tree->get_size() + 1));
+}
+
+// Test deletion of all nodes
+TEST_F(AVLTreeTest, DeleteAllNodes) {
+  std::vector<int> values = {10, 5, 15, 3, 7, 12, 17};
+  for (int val : values) {
+    tree->insert(val);
+  }
+
+  for (int val : values) {
+    tree->delete_key(val);
+    EXPECT_TRUE(tree->is_balanced());
+  }
+
+  EXPECT_TRUE(tree->is_empty());
+  EXPECT_EQ(tree->get_size(), 0);
+}
+
+// Test tree properties after multiple deletions
+TEST_F(AVLTreeTest, MultipleDeletions) {
+  // Insert a complete binary tree
+  for (int i = 1; i <= 15; ++i) {
+    tree->insert(i);
+  }
+
+  // Delete nodes in a specific pattern
+  std::vector<int> to_delete = {8, 4, 12, 2, 6, 10, 14};
+  for (int val : to_delete) {
+    tree->delete_key(val);
+    EXPECT_TRUE(tree->is_balanced());
+  }
+
+  // Verify remaining nodes
+  std::vector<int> remaining = {1, 3, 5, 7, 9, 11, 13, 15};
+  for (int val : remaining) {
+    EXPECT_NE(tree->find(val), nullptr);
+  }
+}
+
+// Test tree properties with negative numbers
+TEST_F(AVLTreeTest, NegativeNumbers) {
+  std::vector<int> values = {-10, -5, -15, -3, -7, -12, -17};
+  for (int val : values) {
+    tree->insert(val);
+  }
+
+  EXPECT_EQ(tree->get_size(), values.size());
+  EXPECT_TRUE(tree->is_balanced());
+  EXPECT_EQ(tree->get_min()->get_key(), -17);
+  EXPECT_EQ(tree->get_max()->get_key(), -3);
+}
+
+// Test tree properties with mixed positive and negative numbers
+TEST_F(AVLTreeTest, MixedNumbers) {
+  std::vector<int> values = {-10, 5, -15, 3, -7, 12, -17};
+  for (int val : values) {
+    tree->insert(val);
+  }
+
+  EXPECT_EQ(tree->get_size(), values.size());
+  EXPECT_TRUE(tree->is_balanced());
+  EXPECT_EQ(tree->get_min()->get_key(), -17);
+  EXPECT_EQ(tree->get_max()->get_key(), 12);
+}
+
+// Test tree properties after clearing and reinserting
+TEST_F(AVLTreeTest, ClearAndReinsert) {
+  // First insertion
+  for (int i = 1; i <= 10; ++i) {
+    tree->insert(i);
+  }
+
+  // Clear tree
+  tree->clear_tree();
+  EXPECT_TRUE(tree->is_empty());
+
+  // Reinsert in different order
+  for (int i = 10; i >= 1; --i) {
+    tree->insert(i);
+  }
+
+  EXPECT_EQ(tree->get_size(), 10);
+  EXPECT_TRUE(tree->is_balanced());
+  EXPECT_EQ(tree->get_min()->get_key(), 1);
+  EXPECT_EQ(tree->get_max()->get_key(), 10);
+}
+
+// Test tree properties with repeated clear and insert operations
+TEST_F(AVLTreeTest, RepeatedClearAndInsert) {
+  for (int iteration = 0; iteration < 5; ++iteration) {
+    // Insert numbers
+    for (int i = 1; i <= 10; ++i) {
+      tree->insert(i);
+    }
+
+    EXPECT_EQ(tree->get_size(), 10);
+    EXPECT_TRUE(tree->is_balanced());
+
+    // Clear tree
+    tree->clear_tree();
+    EXPECT_TRUE(tree->is_empty());
+  }
+}
+
+// Test tree properties with large numbers
+TEST_F(AVLTreeTest, LargeNumbers) {
+  const int max_value = 1000000;
+  std::vector<int> values = {max_value, max_value / 2, max_value / 4,
+                             max_value / 8};
+
+  for (int val : values) {
+    tree->insert(val);
+  }
+
+  EXPECT_EQ(tree->get_size(), values.size());
+  EXPECT_TRUE(tree->is_balanced());
+  EXPECT_EQ(tree->get_min()->get_key(), max_value / 8);
+  EXPECT_EQ(tree->get_max()->get_key(), max_value);
 }
 
 int main(int argc, char **argv) {
