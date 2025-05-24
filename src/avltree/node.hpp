@@ -5,9 +5,11 @@
 #include <iostream>
 
 template <typename T> class AVLTree;
+template <typename T> class PstreeDisplay;
 
 template <typename T> class Node {
   friend class AVLTree<T>;
+  friend class PstreeDisplay<T>;
 
 public:
   Node(const T &key = T{}, int height = 1);

@@ -1,34 +1,37 @@
-#include "avltree.hpp"
+#include "avltree/avltree.hpp"
+#include "utils/menu.hpp"
+#include "utils/pstree_fun.hpp"
+#include <csignal>
 #include <iostream>
 #include <random>
 
+// some work with tree
 void blank();
 void blank2();
+void blank3();
 
 int main() {
-  // blank();
-
   AVLTree<int> tree;
-  std::vector<int> values = {10, 5, 15, 3, 7, 12, 17};
-  for (int val : values) {
-    tree.insert(val);
-  }
+  pid_t display_pid = -1;
+  bool running = true;
 
-  Node<int> *lower = tree.lowerbound(8);
-  if (lower) {
-    std::cout << "lower key: " << lower->get_key() << std::endl;
+  while (running) {
+    running = handle_operation(tree);
+    if (display_pid != -1) {
+      kill(-display_pid, SIGTERM);
+      waitpid(display_pid, nullptr, 0);
+      display_pid = -1;
+    }
+    display_pid = PstreeDisplay<int>::run_pstree_display(tree);
   }
-  if (lower != nullptr && lower->get_key() == 10) {
-    std::cout << 1;
+  // just call clear_tree in menu exit...
+  if (display_pid != -1) {
+    kill(-display_pid, SIGTERM);
+    waitpid(display_pid, nullptr, 0);
   }
-
-  /*
-  Node<int> *upper = tree->upperbound(8);
-  EXPECT_NE(upper, nullptr);
-  EXPECT_EQ(upper->get_key(), 7);
-  */
-  return 0;
 }
+
+void run_pstree_display() {}
 
 void blank2() {
   std::random_device rd;
@@ -138,4 +141,20 @@ void blank() {
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
   tree3.clear_tree();
   std::cout << "tree3 is empty : " << (tree3.is_empty()) << std::endl;
+}
+
+void blank3() {
+  AVLTree<int> tree;
+  std::vector<int> values = {10, 5, 15, 3, 7, 12, 17};
+  for (int val : values) {
+    tree.insert(val);
+  }
+
+  Node<int> *lower = tree.lowerbound(8);
+  if (lower) {
+    std::cout << "lower key: " << lower->get_key() << std::endl;
+  }
+  if (lower != nullptr && lower->get_key() == 10) {
+    std::cout << 1;
+  }
 }

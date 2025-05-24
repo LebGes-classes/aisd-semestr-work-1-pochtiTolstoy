@@ -2,13 +2,16 @@
 
 #include "node.hpp"
 #include <cstdlib>
-#include <stack>
 #include <vector>
 
 #define MAX_BALANCE_TRESHOLD 1
 #define MIN_BALANCE_TRESHOLD -1
 
+template <typename T> class PstreeDisplay; // see pstree_fun.hpp
+
 template <typename T> class AVLTree {
+  friend class PstreeDisplay<T>;
+
 public:
   AVLTree();
   ~AVLTree();
@@ -29,6 +32,7 @@ public:
   std::vector<T> in_order() const;
   std::vector<T> pre_order() const;
   std::vector<T> post_order() const;
+  Node<T> *get_root() const;
 
 private:
   Node<T> *insert_recursively(Node<T> *, const T &);
@@ -505,3 +509,5 @@ void AVLTree<T>::post_order_(Node<T> *node, std::vector<T> &vec) const {
   post_order_(node->right_, vec);
   vec.push_back(node->key_);
 }
+
+template <typename T> Node<T> *AVLTree<T>::get_root() const { return root_; }

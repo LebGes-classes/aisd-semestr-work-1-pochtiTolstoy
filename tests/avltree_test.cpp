@@ -1,4 +1,4 @@
-#include "../src/avltree.hpp"
+#include "../src/avltree/avltree.hpp"
 #include <algorithm>
 #include <chrono>
 #include <gtest/gtest.h>

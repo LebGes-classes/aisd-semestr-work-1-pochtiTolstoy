@@ -5,35 +5,36 @@ project(avltree)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include AVLTree headers as a library (header-only)
-add_library(avltree INTERFACE)
-target_include_directories(avltree INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+# Include directories
+include_directories(
+    src
+    src/avltree
+    src/utils
 )
 
-# Main executable (if you have a main program)
-add_executable(avltree_app src/main.cpp)
-target_link_libraries(avltree_app avltree)
+# Main executable with all required sources
+add_executable(avltree_app 
+    src/main.cpp
+    src/utils/menu.cpp  # Add missing source file
+)
 
-# Fetch GoogleTest
+# GoogleTest configuration
 include(FetchContent)
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Test executable
-enable_testing()
+# Test executable with required sources
 add_executable(avltree_tests
-    tests/avltree_test.cpp  # Updated test file
+    tests/avltree_test.cpp
+    src/utils/menu.cpp  # Add if tests need menu functionality
 )
 target_link_libraries(avltree_tests
-    avltree
     GTest::gtest_main
+    pthread
 )
 
-# Discover and add tests
-include(GoogleTest)
-gtest_discover_tests(avltree_tests)
+enable_testing()
+add_test(NAME avltree_tests COMMAND avltree_tests)
